@@ -26,10 +26,10 @@ class MeteoApiService(
 
         val response = apiClient.getCurrentWeather(latitude, longitude)
         return DisplayFormatterBuilder.newBuilder(15, 4)
-            .append(city.uppercase(), Alignment.LEFT)
-            .append("${response.weather.temperature} CELSIUS", Alignment.LEFT)
-            .append("", Alignment.LEFT)
-            .append(WMODecoder.decode(response.weather.weathercode), Alignment.LEFT)
+            .append(city.uppercase()).newLine()
+            .append("${response.weather.temperature} CELSIUS").newLine()
+            .newLine()
+            .append(WMODecoder.decode(response.weather.weathercode), Alignment.RIGHT)
             .build()
     }
 }

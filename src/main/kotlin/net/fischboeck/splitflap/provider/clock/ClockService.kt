@@ -17,12 +17,17 @@ class ClockService(
 
     override fun nextMessage(): String {
         val now = ZonedDateTime.now(ZoneId.of(timezone))
-        val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+
+        val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.YYYY")
+        val timeFormatter = DateTimeFormatter.ofPattern("HH.mm")
+
         return DisplayFormatterBuilder.newBuilder(15,4)
-            .append(timezone.uppercase(), Alignment.LEFT)
-            .append(DateTimeFormatter.ISO_TIME.format(now), Alignment.LEFT)
-            .append("               ", Alignment.LEFT)
-            .append("     ${formatter.format(now)}", Alignment.LEFT)
+            .append(timezone)
+            .newLine()
+            .append(timeFormatter.format(now))
+            .newLine()
+            .newLine()
+            .append(dateFormatter.format(now), Alignment.RIGHT)
             .build()
     }
 }
