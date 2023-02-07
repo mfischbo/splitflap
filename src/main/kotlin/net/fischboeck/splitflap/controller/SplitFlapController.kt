@@ -25,12 +25,11 @@ class SplitFlapController(
         response.addHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*")
         response.addHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, "GET")
 
-        /*
-        if (requests % 2 == 0) {
-            return openWeatherApiService.nextMessage()
-        } else {
-            return clockService.nextMessage()
-        }*/
-        return bvgService.nextMessage()
+        when (requests % 3) {
+            0 -> return openWeatherApiService.nextMessage()
+            1 -> return clockService.nextMessage()
+            2 -> return bvgService.nextMessage()
+            else -> return "CALCULATION!"
+        }
     }
 }

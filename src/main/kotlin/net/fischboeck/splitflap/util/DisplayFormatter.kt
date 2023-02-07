@@ -1,6 +1,8 @@
 package net.fischboeck.splitflap.util
 
 import mu.KLogging
+import net.fischboeck.splitflap.util.Alignment.LEFT
+import net.fischboeck.splitflap.util.Alignment.RIGHT
 import java.util.ArrayDeque
 
 object DisplayFormatterBuilder {
@@ -21,7 +23,7 @@ object DisplayFormatterBuilder {
             return this
         }
 
-        fun append(text: String, alignment: Alignment = Alignment.LEFT): DisplayFormatter {
+        fun append(text: String, alignment: Alignment = LEFT): DisplayFormatter {
 
             if (current > lines.size) {
                 return this
@@ -31,7 +33,7 @@ object DisplayFormatterBuilder {
 
             // ensures text with alignment.RIGHT is the last one on this line
             // this way it's easier when collapsing
-            if (alignment == Alignment.RIGHT) {
+            if (alignment == RIGHT) {
                 current++
             }
             return this
@@ -59,11 +61,11 @@ object DisplayFormatterBuilder {
                 val item = insertions.poll()
                 val next = insertions.peek()
 
-                if (next != null && next.alignment == Alignment.LEFT) {
+                if (next != null && next.alignment == LEFT) {
                     result += item.text
                 }
 
-                if (next != null && next.alignment == Alignment.RIGHT) {
+                if (next != null && next.alignment == RIGHT) {
 
                     result += item.text
 
@@ -74,12 +76,12 @@ object DisplayFormatterBuilder {
                     return result
                 }
 
-                if (next == null && item.alignment == Alignment.LEFT) {
+                if (next == null && item.alignment == LEFT) {
                     result += item.text
                     return padRight(result)
                 }
 
-                if (next == null && item.alignment == Alignment.RIGHT) {
+                if (next == null && item.alignment == RIGHT) {
                     val padLeft = dimX - item.text.length
                     (0 until padLeft).forEach { _ -> result += whitespace }
                     result += item.text
@@ -109,6 +111,10 @@ object DisplayFormatterBuilder {
             result = result.replace("Ö", "OE")
             result = result.replace("Ä", "AE")
             result = result.replace("Ü", "UE")
+            result = result.replace("ß", "SS")
+
+            // substitute unknown characters
+            result = result.replace(KNOWN_CHARS_PATTERN, " ")
 
             // trim to length
             if (result.length > dimX) {
@@ -117,7 +123,9 @@ object DisplayFormatterBuilder {
             return result
         }
 
-        companion object: KLogging()
+        companion object: KLogging() {
+            val KNOWN_CHARS_PATTERN = Regex("[^A-Z0-9!.$%+\\-()#]")
+        }
     }
 }
 

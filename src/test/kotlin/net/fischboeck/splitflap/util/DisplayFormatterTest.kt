@@ -114,4 +114,12 @@ class DisplayFormatterTest {
         assertEquals("HELLO WO", result)
     }
 
+    @Test
+    fun `sanitizes string correctly`() {
+
+        val result = DisplayFormatterBuilder.newBuilder(8, 1)
+            .append("töst^&1=       ")
+            .build()
+        assertEquals("TOEST  1", result)
+    }
 }
