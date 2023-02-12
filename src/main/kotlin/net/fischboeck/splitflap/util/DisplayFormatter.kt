@@ -3,17 +3,18 @@ package net.fischboeck.splitflap.util
 import mu.KLogging
 import net.fischboeck.splitflap.util.Alignment.LEFT
 import net.fischboeck.splitflap.util.Alignment.RIGHT
+import net.fischboeck.splitflap.util.DisplayUtils.sanitize
 import java.util.ArrayDeque
 
 object DisplayFormatterBuilder {
 
-        fun newBuilder(dimX: Short, dimY: Short, whitespace: String = " "): DisplayFormatter {
+        fun newBuilder(dimX: Int, dimY: Int, whitespace: String = " "): DisplayFormatter {
             return DisplayFormatter(dimX, dimY, whitespace)
         }
 
     class Insertion(val text: String, val alignment: Alignment)
 
-    class DisplayFormatter internal constructor(private val dimX: Short, private val dimY: Short, private val whitespace: String) {
+    class DisplayFormatter internal constructor(private val dimX: Int, private val dimY: Int, private val whitespace: String) {
 
         private val lines = (0 until dimY).map { ArrayDeque <Insertion>() }.toList()
         private var current = 0;
@@ -25,10 +26,10 @@ object DisplayFormatterBuilder {
 
         fun append(text: String, alignment: Alignment = LEFT): DisplayFormatter {
 
-            if (current > lines.size) {
+            if (current >= lines.size) {
                 return this
             }
-            val sanitizedText = sanitize(text)
+            val sanitizedText = sanitize(text, dimX)
             lines[current].addLast(Insertion(sanitizedText, alignment))
 
             // ensures text with alignment.RIGHT is the last one on this line
@@ -103,28 +104,8 @@ object DisplayFormatterBuilder {
         }
 
 
-        private fun sanitize(text: String): String {
-
-            var result = text.uppercase()
-
-            // replace common characters
-            result = result.replace("Ö", "OE")
-            result = result.replace("Ä", "AE")
-            result = result.replace("Ü", "UE")
-            result = result.replace("ß", "SS")
-
-            // substitute unknown characters
-            result = result.replace(KNOWN_CHARS_PATTERN, " ")
-
-            // trim to length
-            if (result.length > dimX) {
-                result = result.substring(0 until dimX.toInt())
-            }
-            return result
-        }
-
         companion object: KLogging() {
-            val KNOWN_CHARS_PATTERN = Regex("[^A-Z0-9!.$%+\\-()#]")
+            val KNOWN_CHARS_PATTERN = Regex("[^A-Z0-9!.$%+\\-():/*\"]")
         }
     }
 }
